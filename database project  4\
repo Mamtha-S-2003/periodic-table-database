@@ -1,0 +1,415 @@
+Instructions
+You are started with a periodic_table database that has information about some chemical elements. You can connect to it by entering psql --username=freecodecamp --dbname=periodic_table in the terminal. You may want to get a little familiar with the existing tables, columns, and rows. Read the instructions below and complete user stories to finish the project. Certain tests may not pass until other user stories are complete. Good luck!
+
+Part 1: Fix the database
+
+There are some mistakes in the database that need to be fixed or changed. See the user stories below for what to change.
+
+Part 2: Create your git repository
+
+You need to make a small bash program. The code needs to be version controlled with git, so you will need to turn the suggested folder into a git repository.
+
+Part 3: Create the script
+
+Lastly, you need to make a script that accepts an argument in the form of an atomic number, symbol, or name of an element and outputs some information about the given element. In your script, you can create a PSQL variable for querying the database like this: PSQL="psql --username=freecodecamp --dbname=<database_name> -t --no-align -c", add more flags if you need to.
+
+Notes:
+If you leave your virtual machine, your database may not be saved. You can make a dump of it by entering pg_dump -cC --inserts -U freecodecamp periodic_table > periodic_table.sql in a bash terminal (not the psql one). It will save the commands to rebuild your database in periodic_table.sql. The file will be located where the command was entered. If it's anything inside the project folder, the file will be saved in the VM. You can rebuild the database by entering psql -U postgres < periodic_table.sql in a terminal where the .sql file is.
+
+If you are saving your progress on freeCodeCamp.org, after getting all the tests to pass, follow the instructions above to save a dump of your database. Save the periodic_table.sql file, as well as the final version of your element.sh file, in a public repository and submit the URL to it on freeCodeCamp.org.
+
+Complete the tasks below
+
+You should rename the weight column to atomic_mass
+
+You should rename the melting_point column to melting_point_celsius and the boiling_point column to boiling_point_celsius
+
+Your melting_point_celsius and boiling_point_celsius columns should not accept null values
+
+You should add the UNIQUE constraint to the symbol and name columns from the elements table
+
+Your symbol and name columns should have the NOT NULL constraint
+
+You should set the atomic_number column from the properties table as a foreign key that references the column of the same name in the elements table
+
+You should create a types table that will store the three types of elements
+
+Your types table should have a type_id column that is an integer and the primary key
+
+Your types table should have a type column that's a VARCHAR and cannot be null. It will store the different types from the type column in the properties table
+
+You should add three rows to your types table whose values are the three different types from the properties table
+
+Your properties table should have a type_id foreign key column that references the type_id column from the types table. It should be an INT with the NOT NULL constraint
+
+Each row in your properties table should have a type_id value that links to the correct type from the types table
+
+You should capitalize the first letter of all the symbol values in the elements table. Be careful to only capitalize the letter and not change any others
+
+You should remove all the trailing zeros after the decimals from each row of the atomic_mass column. You may need to adjust a data type to DECIMAL for this. The final values they should be are in the atomic_mass.txt file
+
+You should add the element with atomic number 9 to your database. Its name is Fluorine, symbol is F, mass is 18.998, melting point is -220, boiling point is -188.1, and it's a nonmetal
+
+You should add the element with atomic number 10 to your database. Its name is Neon, symbol is Ne, mass is 20.18, melting point is -248.6, boiling point is -246.1, and it's a nonmetal
+
+You should create a periodic_table folder in the project folder and turn it into a git repository with git init
+
+Your repository should have a main branch with all your commits
+
+Your periodic_table repo should have at least five commits
+
+You should create an element.sh file in your repo folder for the program I want you to make
+
+Your script (.sh) file should have executable permissions
+
+If you run ./element.sh, it should output only Please provide an element as an argument. and finish running.
+
+If you run ./element.sh 1, ./element.sh H, or ./element.sh Hydrogen, it should output only The element with atomic number 1 is Hydrogen (H). It's a nonmetal, with a mass of 1.008 amu. Hydrogen has a melting point of -259.1 celsius and a boiling point of -252.9 celsius.
+
+If you run ./element.sh script with another element as input, you should get the same output but with information associated with the given element.
+
+If the argument input to your element.sh script doesn't exist as an atomic_number, symbol, or name in the database, the only output should be I could not find that element in the database.
+
+The message for the first commit in your repo should be Initial commit
+
+The rest of the commit messages should start with fix:, feat:, refactor:, chore:, or test:
+
+You should delete the non existent element, whose atomic_number is 1000, from the two tables
+
+Your properties table should not have a type column
+
+You should finish your project while on the main branch. Your working tree should be clean and you should not have any uncommitted changes
+-------------
+sql
+-------------
+camper: /project$  psql --username=freecodecamp --dbname=periodic_table
+psql (12.17 (Ubuntu 12.17-1.pgdg22.04+1))
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+Type "help" for help.
+
+periodic_table=>  \d
+             List of relations
+ Schema |    Name    | Type  |    Owner     
+--------+------------+-------+--------------
+ public | elements   | table | freecodecamp
+ public | properties | table | freecodecamp
+(2 rows)
+
+periodic_table=> select * from elements;
+periodic_table=>  \d properties
+periodic_table=> \d elements
+                        Table "public.elements"
+    Column     |         Type          | Collation | Nullable | Default 
+---------------+-----------------------+-----------+----------+---------
+ atomic_number | integer               |           | not null | 
+ symbol        | character varying(2)  |           |          | 
+ name          | character varying(40) |           |          | 
+Indexes:
+    "elements_pkey" PRIMARY KEY, btree (atomic_number)
+    "elements_atomic_number_key" UNIQUE CONSTRAINT, btree (atomic_number)
+
+periodic_table=> ALTER TABLE properties RENAME weight TO atomic_mass;
+ALTER TABLE
+periodic_table=> \d properties
+periodic_table=>  ALTER TABLE properties RENAME melting_point TO melting_point_celsius;
+ALTER TABLE
+periodic_table=> ALTER TABLE properties RENAME boiling_point TO boilling_point_celsius;
+ALTER TABLE
+periodic_table=> \d properties
+periodic_table=>  ALTER TABLE properties ALTER COLUMN melting_point_celsius SET NOT NULL;
+ALTER TABLE
+periodic_table=> ALTER TABLE properties RENAME boilling_point_celsius TO boiling_point_celsius ;
+ALTER TABLE
+periodic_table=> ALTER TABLE properties ALTER COLUMN boiling_point_celsius SET NOT NULL;
+ALTER TABLE
+periodic_table=>  ALTER TABLE elements ADD UNIQUE(symbol);
+ALTER TABLE
+periodic_table=> ALTER TABLE elements ADD UNIQUE(name);
+ALTER TABLE
+periodic_table=>  \d elements
+periodic_table=>  ALTER TABLE elements ALTER COLUMN name SET NOT NULL;
+ALTER TABLE
+periodic_table=> ALTER TABLE elements ALTER COLUMN symbol SET NOT NULL;
+ALTER TABLE
+periodic_table=>  ALTER TABLE properties ADD FOREIGN KEY(atomic_number) REFERENCES elements(atomic_number);
+ALTER TABLE
+periodic_table=>  CREATE TABLE types(types_id SERIAL NOT NULL);
+CREATE TABLE
+periodic_table=>  \d types
+                                Table "public.types"
+  Column  |  Type   | Collation | Nullable |                 Default                 
+----------+---------+-----------+----------+-----------------------------------------
+ types_id | integer |           | not null | nextval('types_types_id_seq'::regclass)
+
+periodic_table=>  \d properties
+periodic_table=> select * from properties;
+periodic_table=> ALTER TABLE types ADD COLUMN type VARCHAR(20) NOT NULL;
+ALTER TABLE
+periodic_table=>  INSERT INTO types(type) VALUES('nonmetal'),('metal'),('metalloid');
+INSERT 0 3
+periodic_table=>  select * from types;
+ types_id |   type    
+----------+-----------
+        1 | nonmetal
+        2 | metal
+        3 | metalloid
+(3 rows)
+
+periodic_table=>  ALTER TABLE types ADD PRIMARY KEY(type_id);
+ERROR:  column "type_id" of relation "types" does not exist
+periodic_table=>  \d types
+                                       Table "public.types"
+  Column  |         Type          | Collation | Nullable |                 Default                 
+----------+-----------------------+-----------+----------+-----------------------------------------
+ types_id | integer               |           | not null | nextval('types_types_id_seq'::regclass)
+ type     | character varying(20) |           | not null | 
+
+periodic_table=> ALTER TABLE types RENAME types_id TO type_id;
+ALTER TABLE
+periodic_table=>  \d types
+                                       Table "public.types"
+ Column  |         Type          | Collation | Nullable |                 Default                 
+---------+-----------------------+-----------+----------+-----------------------------------------
+ type_id | integer               |           | not null | nextval('types_types_id_seq'::regclass)
+ type    | character varying(20) |           | not null | 
+
+periodic_table=> ALTER TABLE types ADD PRIMARY KEY(type_id);
+ALTER TABLE
+periodic_table=>  \d types
+                                       Table "public.types"
+ Column  |         Type          | Collation | Nullable |                 Default                 
+---------+-----------------------+-----------+----------+-----------------------------------------
+ type_id | integer               |           | not null | nextval('types_types_id_seq'::regclass)
+ type    | character varying(20) |           | not null | 
+Indexes:
+    "types_pkey" PRIMARY KEY, btree (type_id)
+
+periodic_table=> ALTER TABLE properties ADD COLUMN type_id INT REFERENCES types(type_id);
+ALTER TABLE
+periodic_table=>  select * from properties;
+periodic_table=>  UPDATE properties SET type_id=1 WHERE type='nonmetal';
+UPDATE 5
+periodic_table=>  select * from properties;
+periodic_table=>  UPDATE properties SET type_id=2 WHERE type='metal';
+UPDATE 2
+periodic_table=> UPDATE properties SET type_id=3 WHERE type='metalloid';
+UPDATE 2
+periodic_table=>  select * from types;
+ type_id |   type    
+---------+-----------
+       1 | nonmetal
+       2 | metal
+       3 | metalloid
+(3 rows)
+
+periodic_table=>  select * from properties;
+periodic_table=> ALTER TABLE properties ALTER COLUMN type_id SET NOT NULL;
+ALTER TABLE
+periodic_table=>  select * from elements;
+periodic_table=>  UPDATE elements SET symbol = 'He' WHERE symbol = 'he';
+UPDATE 1
+periodic_table=>  UPDATE elements SET symbol = 'Li' WHERE symbol = 'li';
+UPDATE 1
+periodic_table=>  UPDATE elements SET symbol = 'Mt' WHERE symbol = 'mT';
+UPDATE 1
+periodic_table=> select * from properties;
+periodic_table=> ALTER TABLE properties ALTER COLUMN atomic_mass SET DATA TYPE numeric(9,1);
+ALTER TABLE
+periodic_table=>  \d properties
+periodic_table=>  ALTER TABLE properties ALTER COLUMN atomic_mass SET DATA TYPE DECIMAL;
+ALTER TABLE
+periodic_table=>  select * from properties;
+periodic_table=> ALTER TABLE properties ALTER COLUMN atomic_mass SET DATA TYPE DECIMAL(9,0);
+ALTER TABLE
+periodic_table=>  ALTER TABLE properties ALTER COLUMN atomic_mass SET DATA TYPE DECIMAL;
+ALTER TABLE
+periodic_table=>  select * from properties;
+periodic_table=>  UPDATE properties SET atomic_mass = 15 WHERE atomic_number = 8;
+UPDATE 1
+periodic_table=>  INSERT INTO elements(atomic_number, symbol, name) VALUES(9, 'F', 'Fluorine');
+INSERT 0 1
+periodic_table=> INSERT INTO elements(atomic_number, symbol, name) VALUES(10, 'Ne', 'Neon');
+INSERT 0 1
+periodic_table=>  INSERT INTO properties(atomic_number, type, atomic_mass, melting_point_celsius, boiling_point_celsius, type_id) VALUES(9, 'nonmetal', 18.998, -220, -188.1, 1);
+INSERT 0 1
+periodic_table=>  INSERT INTO properties(atomic_number, type, atomic_mass, melting_point_celsius, boiling_point_celsius, type_id) VALUES(10, 'nonmetal', 20.18, -248.6, -246.1, 1);
+INSERT 0 1
+periodic_table=> ALTER TABLE properties DROP COLUMN type;
+ALTER TABLE
+periodic_table=>  select * from properties;
+periodic_table=> UPDATE properties SET atomic_mass = 1.008 WHERE atomic_number=1;
+UPDATE 1
+periodic_table=>  select * from properties;
+periodic_table=>  DELETE FROM properties WHERE atomic_number=1000;
+DELETE 1
+periodic_table=>  DELETE FROM elements WHERE atomic_number=1000;
+DELETE 1
+periodic_table=> 
+------------
+terminal
+------------
+camper: /project$  mkdir periodic_table
+camper: /project$ cd periodic_table/
+camper: /periodic_table$ git init
+hint: Using 'master' as the name for the initial branch. This default branch name
+hint: is subject to change. To configure the initial branch name to use in all
+hint: of your new repositories, which will suppress this warning, call:
+hint: 
+hint:   git config --global init.defaultBranch <name>
+hint: 
+hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+hint: 'development'. The just-created branch can be renamed via this command:
+hint: 
+hint:   git branch -m <name>
+Initialized empty Git repository in /workspace/project/periodic_table/.git/
+camper: /periodic_table$  git branch
+camper: /periodic_table$ touch element.sh
+camper: /periodic_table$  git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        element.sh
+
+nothing added to commit but untracked files present (use "git add" to track)
+camper: /periodic_table$ git branch
+camper: /periodic_table$ git commit -m "Initial commit"
+On branch master
+
+Initial commit
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        element.sh
+
+nothing added to commit but untracked files present (use "git add" to track)
+camper: /periodic_table$ git branch
+camper: /periodic_table$ git add .
+camper: /periodic_table$  git commit -m "Initial commit"
+[master (root-commit) 74f8867] Initial commit
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 element.sh
+camper: /periodic_table$ git branch 
+* master
+camper: /periodic_table$ git branch main
+camper: /periodic_table$ chmod +x element.sh
+camper: /periodic_table$  git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   element.sh
+
+no changes added to commit (use "git add" and/or "git commit -a")
+camper: /periodic_table$  git add .
+camper: /periodic_table$  git commit -m "feat: add database connection"
+[master 8996c42] feat: add database connection
+ 1 file changed, 3 insertions(+)
+ mode change 100644 => 100755 element.sh
+camper: /periodic_table$ ./element.sh 5
+5
+camper: /periodic_table$ ./element.sh 5
+./element.sh: line 5: unexpected EOF while looking for matching `''
+./element.sh: line 6: syntax error: unexpected end of file
+camper: /periodic_table$ ./element.sh 5
+5 hello
+camper: /periodic_table$ ./element.sh
+./element.sh: line 11: syntax error near unexpected token `fi'
+./element.sh: line 11: `  fi'
+camper: /periodic_table$ ./element.sh
+./element.sh: line 13: syntax error near unexpected token `fi'
+./element.sh: line 13: `fi'
+camper: /periodic_table$ ./element.sh
+camper: /periodic_table$ ./element.sh
+Please provide an element as an argument.
+camper: /periodic_table$ ./element.sh 
+Please provide an element as an argument.
+camper: /periodic_table$ ./element.sh 5
+5
+camper: /periodic_table$ man test
+camper: /periodic_table$ ./element.sh
+./element.sh: line 19: syntax error near unexpected token `do'
+./element.sh: line 19: `        do'
+camper: /periodic_table$ ./element.sh
+./element.sh: line 19: syntax error near unexpected token `do'
+./element.sh: line 19: `        do'
+camper: /periodic_table$ ./element.sh
+./element.sh: line 18: syntax error near unexpected token `do'
+./element.sh: line 18: `      do'
+camper: /periodic_table$ ./element.sh
+Please provide an element as an argument.
+camper: /periodic_table$ ./element.sh 1
+ERROR:  missing FROM-clause entry for table "element"
+LINE 1: ...NG(atomic_number) JOIN types USING(type_id) WHERE element.na...
+                                                             ^
+I could not find that element in the database.
+camper: /periodic_table$ ./element.sh 1
+ERROR:  missing FROM-clause entry for table "element"
+LINE 1: ...NG(atomic_number) JOIN types USING(type_id) WHERE element.na...
+                                                             ^
+I could not find that element in the database.
+camper: /periodic_table$ ./element.sh 1
+ERROR:  missing FROM-clause entry for table "element"
+LINE 1: ...NG(atomic_number) JOIN types USING(type_id) WHERE element.na...
+                                                             ^
+I could not find that element in the database.
+camper: /periodic_table$  ./element.sh 1
+I could not find that element in the database.
+camper: /periodic_table$ ./element.sh 1
+I could not find that element in the database.
+camper: /periodic_table$ ./element.sh 1
+1|1.008|-259.1|-252.9|H|Hydrogen|nonmetal
+camper: /periodic_table$ git add .
+camper: /periodic_table$ git commit -m "feat: bring element"
+[master fa27037] feat: bring element
+ 1 file changed, 22 insertions(+)
+camper: /periodic_table$ git add .
+camper: /periodic_table$ git commit -m "fix: bring separated data"
+[master 87453fc] fix: bring separated data
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+camper: /periodic_table$  git checkout main
+Switched to branch 'main'
+camper: /periodic_table$ git merge master
+Updating 74f8867..87453fc
+Fast-forward
+ element.sh | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+ mode change 100644 => 100755 element.sh
+camper: /periodic_table$  git status
+On branch main
+nothing to commit, working tree clean
+camper: /periodic_table$ git add .
+camper: /periodic_table$ git commit -m "feat: bring data"
+[main 6b769d5] feat: bring data
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+camper: /periodic_table$ 
+--------------
+element.sh
+--------------
+#!/bin/bash
+
+PSQL="psql --username=freecodecamp --dbname=periodic_table --no-align --tuples-only -c"
+
+if [[ $1 ]]
+  then
+  if [[ $1 =~ ^[0-9]+$ ]]
+  then
+  ELEMENT=$($PSQL "SELECT atomic_number, atomic_mass, melting_point_celsius, boiling_point_celsius, symbol, name, type FROM properties JOIN elements USING(atomic_number) JOIN types USING(type_id) WHERE atomic_number=$1")
+  else
+  ELEMENT=$($PSQL "SELECT atomic_number, atomic_mass, melting_point_celsius, boiling_point_celsius, symbol, name, type FROM properties JOIN elements USING(atomic_number) JOIN types USING(type_id) WHERE symbol='$1' OR name ILIKE '$1%' ORDER BY atomic_number LIMIT 1")
+  fi
+    if [[ -z $ELEMENT ]]
+    then
+        echo "I could not find that element in the database."
+    else
+        echo $ELEMENT | while IFS=\| read ATOMIC_NUMBER ATOMIC_MASS MPC BPC SY NAME TYPE
+    do
+        echo "The element with atomic number $ATOMIC_NUMBER is $NAME ($SY). It's a $TYPE, with a mass of $ATOMIC_MASS amu. $NAME has a melting point of $MPC celsius and a boiling point of $BPC celsius."
+    done
+
+     fi
+  else
+  echo "Please provide an element as an argument."
+fi
